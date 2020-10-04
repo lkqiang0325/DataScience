@@ -430,10 +430,17 @@ end $$
 delimiter ;
 
 ###18
-select *
-from orderdetails a
-inner join orderdetails b
-on a.orderNumber = b.orderNumber
+select productCode, pcode2
+from
+(select productCode, orderNumber
+from orderdetails) a
+inner join
+(select orderNumber, productCode as pcode2
+from orderdetails) b
+using(orderNumber)
+where productCode != pcode2
+group by productCode, pcode2
+having count(*) >= 10;
 
 #19
 select *, total / (select sum(quantityOrdered * priceEach) from orderdetails) as percent
